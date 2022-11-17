@@ -1,6 +1,7 @@
-import random
-import requests
-import time
+import random       # import random module to generate random numbers
+import requests     # import requests module to get data from API
+import time         # import time module to add a few seconds delay to display output
+from datetime import datetime   # import datetime module to generate timestamp
 
 # Required 1: function to generate a random number between 1 and 151 to use as the Pokemon ID number
 def random_pokemon():
@@ -20,6 +21,7 @@ def random_pokemon():
         'moves': len(pokemon['moves'])
     }
 
+# Welcome to the game and tell the player the rules
 def intro():
     print("Welcome to the wonderful Pokemon game!")
     time.sleep(2)
@@ -36,36 +38,38 @@ def intro():
     print("5. The player with the stat higher than their opponent wins")
     time.sleep(2)
 
+# Ask if player wants to play the game
 def start_game():
     intro()
     start_play = input("Now would you like to play Pokemon game with me? y/n: ")
-    if start_play == 'y':
+    if start_play.lower() == 'y':
         play()
-    elif start_play == 'n':
+    elif start_play.lower() == 'n':
         print("That's a shame, you don't want any fun :(")
     else:
         print("I don't understand what you want to do.")
 
+# play the game
 def play():
     want_continue = 'y'
     player_total = 0
     computer_total = 0
     rounds = 1
-    while want_continue == 'y':
-# Required 4: Get a random Pokemon for the player and another for their opponent
+    while want_continue.lower() == 'y':
+        # Required 4: Get a random Pokemon for the player and another for their opponent
         player_pokemon = random_pokemon()
         computer_pokemon = random_pokemon()
-        print(f"^^^^^^^^^^^^^^^ROUND {rounds}^^^^^^^^^^^^^^^")
+        print(f"^^^^^^^^^^^^^^^^^^^^ROUND {rounds}^^^^^^^^^^^^^^^^^^^^")
         print("----------Generating Your Pokemon...----------")
         time.sleep(2)
-        print("Your Pokemon's ID is: " + str(player_pokemon['id']))
-        print("Your Pokemon's name is: " + (player_pokemon['name']).capitalize())
-        print("Your Pokemon's height is: " + str(player_pokemon['height']))
-        print("Your Pokemon's weight is: " + str(player_pokemon['weight']))
-        print("Your Pokemon's base experience is: " + str(player_pokemon['base_experience']))
-        print("Your Pokemon can make " + str(player_pokemon['moves']) + ' moves.')
+        print("Your Pokemon's ID is:                   " + str(player_pokemon['id']))
+        print("Your Pokemon's name is:                 " + (player_pokemon['name']).capitalize())
+        print("Your Pokemon's height is:               " + str(player_pokemon['height']))
+        print("Your Pokemon's weight is:               " + str(player_pokemon['weight']))
+        print("Your Pokemon's base experience is:      " + str(player_pokemon['base_experience']))
+        print("Your Pokemon can make                   " + str(player_pokemon['moves']) + ' moves.')
         print("----------------------------------------------")
-# Required 5: Ask the user which stat they want to use (id, height or weight)
+        # Required 5: Ask the user which stat they want to use (id, height or weight)
         which_stat = input(
             "Which stat would you like to use to compare with my Pokemon? \n Please type id/height/weight/base_experience/moves: ")
         player_stat = player_pokemon[which_stat]
@@ -73,7 +77,7 @@ def play():
         print("**********Generating My Pokemon...**********")
         time.sleep(2)
         print("*********************************************")
-# Required 6: Compare the player's and opponent's Pokemon on the chosen stat to decide who wins
+        # Required 6: Compare the player's and opponent's Pokemon on the chosen stat to decide who wins
         if player_stat > computer_stat:
             print("You won!")
             player_total += 1
@@ -84,19 +88,19 @@ def play():
             print("It's a draw, no points to either")
         rounds += 1
         time.sleep(2)
-        print("My Pokemon's ID is: " + str(computer_pokemon['id']))
-        print("My Pokemon's name is: " + (computer_pokemon['name']).capitalize())
-        print("My Pokemon's height is: " + str(computer_pokemon['height']))
-        print("My Pokemon's weight is: " + str(computer_pokemon['weight']))
-        print("My Pokemon's base experience is: " + str(computer_pokemon['base_experience']))
-        print("My Pokemon can make " + str(computer_pokemon['moves']) + ' moves.')
+        print("My Pokemon's ID is:                   " + str(computer_pokemon['id']))
+        print("My Pokemon's name is:                 " + (computer_pokemon['name']).capitalize())
+        print("My Pokemon's height is:               " + str(computer_pokemon['height']))
+        print("My Pokemon's weight is:               " + str(computer_pokemon['weight']))
+        print("My Pokemon's base experience is:      " + str(computer_pokemon['base_experience']))
+        print("My Pokemon can make                   " + str(computer_pokemon['moves']) + ' moves.')
         print("*********************************************")
         print(f"Your Pokemon's {which_stat} is {player_pokemon[which_stat]}")
         print(f"My Pokemon's {which_stat} is {computer_pokemon[which_stat]}")
 
         print(f'Your score: {player_total} vs my score: {computer_total}')
-# Extended: Play multiple rounds and record the outcome of each round. The player with most number
-# of rounds won, wins the game
+        # Extended: Play multiple rounds and record the outcome of each round. The player with most number
+        # of rounds won, wins the game
         want_continue = input("Would you like to continue playing? (y/n)")
     time.sleep(2)
     print("===============Final Result===============")
@@ -105,9 +109,18 @@ def play():
     time.sleep(2)
     if player_total > computer_total:
         print(f"Well done! Your final score is {player_total}, my final score is {computer_total}, you beat me!")
+        print("==========================================")
     elif player_total > computer_total:
         print(f"Your final score is {player_total}, my final score is {computer_total}. I'm sorry but I'm clever than you.")
+        print("==========================================")
     elif player_total == computer_total:
         print(f"Your final score is {player_total}, my final score is {computer_total}. It's a draw! I think we should play again.")
+        print("==========================================")
+    # Extended: Record scores for players and store them in a file
+    with open('result_sheet.txt', 'a+') as result_sheet:
+        current = datetime.now()
+        curr_time = current.strftime("%d/%m/%Y %H:%M:%S")
+        result_sheet.write(f"Time: {curr_time}\n")
+        result_sheet.write(f"Total {rounds  - 1} rounds played, your final score is {player_total}, computer's final score is {computer_total}. \n\n")
 
 start_game()
