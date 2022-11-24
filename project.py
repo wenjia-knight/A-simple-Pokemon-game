@@ -10,8 +10,8 @@ def random_pokemon():
     response = requests.get(url)
 # Required 2: Using the Pokemon API get a Pokemon based on its ID number
     pokemon = response.json()
-# Extended: Use different stats (base experience and number of moves) for the Pokemon from the API
 # Required 3: Create a dictionary that contains the returned Pokemon's name, id, height and weight
+# Extended: Use different stats (base experience and number of moves) for the Pokemon from the API
     return {
         'name': pokemon['name'],
         'id': pokemon['id'],
@@ -42,9 +42,9 @@ def intro():
 def start_game():
     intro()
     start_play = input("Now would you like to play Pokemon game with me? y/n: ")
-    if start_play.lower() == 'y':
+    if start_play.lower() == 'y' or start_play.lower() == 'yes':
         play()
-    elif start_play.lower() == 'n':
+    elif start_play.lower() == 'n' or start_play.lower() == 'no':
         print("That's a shame, you don't want any fun :(")
     else:
         print("I don't understand what you want to do.")
@@ -54,26 +54,58 @@ def play():
     want_continue = 'y'
     player_total = 0
     computer_total = 0
-    rounds = 1
-    while want_continue.lower() == 'y':
+    rounds = 0
+    while want_continue.lower() == 'y' or want_continue.lower() == 'yes':
         # Required 4: Get a random Pokemon for the player and another for their opponent
-        player_pokemon = random_pokemon()
+        player_pokemon_1 = random_pokemon()
+        player_pokemon_2 = random_pokemon()
         computer_pokemon = random_pokemon()
-        print(f"^^^^^^^^^^^^^^^^^^^^ROUND {rounds}^^^^^^^^^^^^^^^^^^^^")
-        print("----------Generating Your Pokemon...----------")
+        print(f"^^^^^^^^^^^^^^^^^^^^ROUND {rounds + 1}^^^^^^^^^^^^^^^^^^^^")
+        # Extended: Get multiple random Pokemon and let the player decide which one that they want to use
+        print("----------Generating Your Pokemon 1...----------")
         time.sleep(2)
-        print("Your Pokemon's ID is:                   " + str(player_pokemon['id']))
-        print("Your Pokemon's name is:                 " + (player_pokemon['name']).capitalize())
-        print("Your Pokemon's height is:               " + str(player_pokemon['height']))
-        print("Your Pokemon's weight is:               " + str(player_pokemon['weight']))
-        print("Your Pokemon's base experience is:      " + str(player_pokemon['base_experience']))
-        print("Your Pokemon can make                   " + str(player_pokemon['moves']) + ' moves.')
-        print("----------------------------------------------")
+        print("Your Pokemon's ID is:                   " + str(player_pokemon_1['id']))
+        print("Your Pokemon's name is:                 " + (player_pokemon_1['name']).capitalize())
+        print("Your Pokemon's height is:               " + str(player_pokemon_1['height']))
+        print("Your Pokemon's weight is:               " + str(player_pokemon_1['weight']))
+        print("Your Pokemon's base experience is:      " + str(player_pokemon_1['base_experience']))
+        print("Your Pokemon can make                   " + str(player_pokemon_1['moves']) + ' moves.')
+        print("------------------------------------------------")
+        print("----------Generating Your Pokemon 2...----------")
+        time.sleep(2)
+        print("Your Pokemon's ID is:                   " + str(player_pokemon_2['id']))
+        print("Your Pokemon's name is:                 " + (player_pokemon_2['name']).capitalize())
+        print("Your Pokemon's height is:               " + str(player_pokemon_2['height']))
+        print("Your Pokemon's weight is:               " + str(player_pokemon_2['weight']))
+        print("Your Pokemon's base experience is:      " + str(player_pokemon_2['base_experience']))
+        print("Your Pokemon can make                   " + str(player_pokemon_2['moves']) + ' moves.')
+        print("------------------------------------------------")
+        which_pokemon = input("Which Pokemon whould you like to use? (type '1' for Pokemon 1, type '2' for Pokemon 2) ")
+        if which_pokemon == '1':
+            player_pokemon = player_pokemon_1
+        elif which_pokemon == '2':
+            player_pokemon = player_pokemon_2
+        # Extended: Allow the opponent (computer) to choose a stat that they would like to compare.
+        player_choose = input("Would you like to choose which stat to use? If 'y', you can choose. If 'n', I will choose. ")
+        if player_choose.lower() == 'y' or player_choose.lower() == 'yes':
         # Required 5: Ask the user which stat they want to use (id, height or weight)
-        which_stat = input(
-            "Which stat would you like to use to compare with my Pokemon? \n Please type id/height/weight/base_experience/moves: ")
-        player_stat = player_pokemon[which_stat]
-        computer_stat = computer_pokemon[which_stat]
+            which_stat = input(
+                "Which stat would you like to use to compare with my Pokemon? \n Please type id/height/weight/base_experience/moves: ")
+            player_stat = player_pokemon[which_stat]
+            computer_stat = computer_pokemon[which_stat]
+        elif player_choose.lower() == 'n' or player_choose == 'no':
+            stat = {
+                "id": computer_pokemon['id'],
+                "height": computer_pokemon['height'],
+                "weight": computer_pokemon['weight'],
+                "base_experience": computer_pokemon['base_experience'],
+                "moves": computer_pokemon['moves']
+            }
+            max_stat = [key for key in stat.keys() if stat[key] == max(stat.values())]
+            which_stat = max_stat[0]
+            player_stat = player_pokemon[which_stat]
+            computer_stat = computer_pokemon[which_stat]
+            print("I choose {} as the stat to compare with. ".format(which_stat))
         print("**********Generating My Pokemon...**********")
         time.sleep(2)
         print("*********************************************")
@@ -97,7 +129,6 @@ def play():
         print("*********************************************")
         print(f"Your Pokemon's {which_stat} is {player_pokemon[which_stat]}")
         print(f"My Pokemon's {which_stat} is {computer_pokemon[which_stat]}")
-
         print(f'Your score: {player_total} vs my score: {computer_total}')
         # Extended: Play multiple rounds and record the outcome of each round. The player with most number
         # of rounds won, wins the game
@@ -105,7 +136,7 @@ def play():
     time.sleep(2)
     print("===============Final Result===============")
     time.sleep(2)
-    print(f"We have played {rounds - 1} rounds in total")
+    print(f"We have played {rounds} rounds in total")
     time.sleep(2)
     if player_total > computer_total:
         print(f"Well done! Your final score is {player_total}, my final score is {computer_total}, you beat me!")
@@ -121,6 +152,6 @@ def play():
         current = datetime.now()
         curr_time = current.strftime("%d/%m/%Y %H:%M:%S")
         result_sheet.write(f"Time: {curr_time}\n")
-        result_sheet.write(f"Total {rounds  - 1} rounds played, your final score is {player_total}, computer's final score is {computer_total}. \n\n")
+        result_sheet.write(f"Total {rounds} rounds played, your final score is {player_total}, computer's final score is {computer_total}. \n\n")
 
 start_game()
